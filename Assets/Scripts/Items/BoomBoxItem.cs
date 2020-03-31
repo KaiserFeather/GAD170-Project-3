@@ -13,23 +13,52 @@ public class BoomBoxItem : InteractiveItem
 {
     //TODO: you will need more data than this, like clips to play and a way to know which clip is playing
     protected AudioSource audioSource;
+    [SerializeField] AudioClip[] radiomusic;
+    int song = -1;
 
+    bool isUsed = false;
     protected override void Start()
     {
         base.Start();
-
-        //TODO; prep the boom box
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip = radiomusic[0];
     }
 
     public void PlayClip()
     {
-        //TODO; this is where you might want to setup and ensure the desire clip is playing on the source
+        audioSource.clip = radiomusic[song];
+        audioSource.Play();
+    }
+
+    void Update()
+    {
+        if (!audioSource.isPlaying && isUsed)
+        {
+            song++;
+
+            if (song > radiomusic.Length - 1)
+                song = 0;
+
+
+            PlayClip();
+        }
     }
 
     public override void OnUse()
     {
         base.OnUse();
+        isUsed = true;
 
-        //TODO; this where we need to go to next track and start and stop playing
+        if (song < radiomusic.Length - 1)
+        {
+            song++;
+            PlayClip();
+        }
+        else
+        {
+            audioSource.Stop();
+            song = 0;
+            isUsed = false;
+        }
     }
 }
