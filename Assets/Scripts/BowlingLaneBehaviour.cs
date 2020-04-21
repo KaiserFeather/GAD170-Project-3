@@ -16,8 +16,16 @@ public class BowlingLaneBehaviour : MonoBehaviour
     public GameObject bowlingBall;
     public Transform[] pinSpawnLocations;
     public Transform defaultBallLocation;
+    int score;
     //TODO; we need a way of tracking the pins that are used for scoring and so we can clean them up
     public List<GameObject> pins = new List<GameObject>();
+    BowlingCheckListItem bowlingCheckListItem;
+
+    void Start()
+    {
+        bowlingCheckListItem = FindObjectOfType<BowlingCheckListItem>();
+        bowlingCheckListItem.MaxScore = pinSpawnLocations.Length;
+    }
 
     [ContextMenu("InitialiseRound")]
     public void InitialiseRound()
@@ -40,21 +48,22 @@ public class BowlingLaneBehaviour : MonoBehaviour
         bowlingBall.GetComponent<Rigidbody>().velocity = Vector3.zero;
         bowlingBall.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
     }
-    int score;
     [ContextMenu("TalleyScore")]
     public void TalleyScore()
     {
         //TODO; determine score and get that information out to a checklist item, either via event or directly
-        score = 0;
+        int score = 0;
         for (int i = 0; i < pins.Count; i++)
         {
-            float angle = Vector3.Dot(Vector3.up, pins[0].transform.up);
+            float angle = Vector3.Dot(Vector3.up, pins[i].transform.up);
             if (angle <= 0.9f)
             {
                 score++;
             }
         }
-
+        print(score);
+        bowlingCheckListItem.Score = score;
+        bowlingCheckListItem.OnBowlingScored();
     }
 
     [ContextMenu("ResetRack")]
@@ -69,6 +78,10 @@ public class BowlingLaneBehaviour : MonoBehaviour
             bowlingBall.transform.rotation = defaultBallLocation.transform.rotation;
             bowlingBall.GetComponent<Rigidbody>().velocity = Vector3.zero;
             bowlingBall.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+
+            bowlingCheckListItem.Score = 0;
+            bowlingCheckListItem.OnBowlingScored();
+
         }
     }
 
