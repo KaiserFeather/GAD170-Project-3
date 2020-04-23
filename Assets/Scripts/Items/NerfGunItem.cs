@@ -9,8 +9,8 @@ public class NerfGunItem : InteractiveItem
 {
     public GameObject nerfDartPrefab;
     public Transform nerfDartSpawnLocation;
-    public float fireRate = 1;
-    public float launchForce = 10;
+    public float fireRate = 1; //this sets how often the gun can fire
+    public float launchForce = 10; //this sets how strong the force of the shot is
     protected float fireRateCounter;
 
     AudioSource audioSource;
@@ -18,11 +18,11 @@ public class NerfGunItem : InteractiveItem
 
     private void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>(); //this sets the sound of the gunshot
     }
     protected void Update()
     {
-        timer += Time.deltaTime;
+        timer += Time.deltaTime; //used to stop the player from firing too often
     }
 
     public override void OnUse()
@@ -33,13 +33,13 @@ public class NerfGunItem : InteractiveItem
 
     public void FireNow()
     {
-        if (timer >= fireRate)
+        if (timer >= fireRate) //ensures that the player can fire
         {
-            audioSource.Play();
-            GameObject dart = Instantiate(nerfDartPrefab, nerfDartSpawnLocation.position, Quaternion.identity);
-            Rigidbody rb = dart.GetComponent<Rigidbody>();
-            rb.AddForce(transform.forward * launchForce);
-            timer = 0;
+            audioSource.Play(); //plays the gunshot
+            GameObject dart = Instantiate(nerfDartPrefab, nerfDartSpawnLocation.position, Quaternion.identity); //sets how the shot will spawn
+            Rigidbody rb = dart.GetComponent<Rigidbody>(); //spawns the bullet
+            rb.AddForce(transform.forward * launchForce); //fires the bullet
+            timer = 0; //sets the timer so that the player has to wait before firing again
         }
     }
 }

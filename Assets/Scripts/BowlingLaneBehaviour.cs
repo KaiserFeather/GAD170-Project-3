@@ -17,21 +17,20 @@ public class BowlingLaneBehaviour : MonoBehaviour
     public Transform[] pinSpawnLocations;
     public Transform defaultBallLocation;
     int score;
-    //TODO; we need a way of tracking the pins that are used for scoring and so we can clean them up
+    //Creating a list of all the pins so they can be individually checked for different functions
     public List<GameObject> pins = new List<GameObject>();
     BowlingCheckListItem bowlingCheckListItem;
 
     void Start()
     {
+        //this is used for putting results on the scoreboard
         bowlingCheckListItem = FindObjectOfType<BowlingCheckListItem>();
-        bowlingCheckListItem.MaxScore = pinSpawnLocations.Length;
+        bowlingCheckListItem.MaxScore = pinSpawnLocations.Length; //the maximum score is the number of pin spawn locations
     }
 
     [ContextMenu("InitialiseRound")]
     public void InitialiseRound()
-    {
-        //TODO; need to move or init or create pins for a round of bowling, most likely to include some of the following;
-        
+    {   
         foreach (Transform pinLoc in pinSpawnLocations) //for each of the pins, it finds a suitable location to spawn
         {
             GameObject newPin = Instantiate(pinPrefab, pinLoc.position, pinLoc.rotation); //spawns the pin in a location
@@ -40,42 +39,43 @@ public class BowlingLaneBehaviour : MonoBehaviour
         
     }
 
+    //this puts the bowling ball back into its spawn location if it rolls off the end of the land
     public void BallReachedEnd()
     {
-        //TODO; this needs to return the ball to the ball feed so the player could bowl again or at least clean ups
-        bowlingBall.transform.position = defaultBallLocation.transform.position;
-        bowlingBall.transform.rotation = defaultBallLocation.transform.rotation;
-        bowlingBall.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        bowlingBall.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        bowlingBall.transform.position = defaultBallLocation.transform.position; //sets the position it should be in
+        bowlingBall.transform.rotation = defaultBallLocation.transform.rotation; //sets the roatation it should have
+        bowlingBall.GetComponent<Rigidbody>().velocity = Vector3.zero; //stops movement
+        bowlingBall.GetComponent<Rigidbody>().angularVelocity = Vector3.zero; //stops movement
     }
     [ContextMenu("TalleyScore")]
+    //this will figure out which pins are knocked over and use that to determine the score
     public void TalleyScore()
     {
-        //TODO; determine score and get that information out to a checklist item, either via event or directly
         int score = 0;
         for (int i = 0; i < pins.Count; i++)
         {
             float angle = Vector3.Dot(Vector3.up, pins[i].transform.up);
-            if (angle <= 0.9f)
+            if (angle <= 0.9f)//if a pin falls past this angle, it counts as one point
             {
                 score++;
             }
         }
         print(score);
-        bowlingCheckListItem.Score = score;
+        bowlingCheckListItem.Score = score; //used for adding score to scoreboard
         bowlingCheckListItem.OnBowlingScored();
     }
 
     [ContextMenu("ResetRack")]
     public void ResetRack()
     {
-        //TODO; clean up all objects created by the bowling lane, preparing for a new round of bowling to occur
         for (int i = 0; i < pins.Count; i++)
         {
+            //this sets all of the pins back where they should be with the correct position and rotation
             pins[i].transform.position = pinSpawnLocations[i].transform.position;
             pins[i].transform.rotation = pinSpawnLocations[i].transform.rotation;
             bowlingBall.transform.position = defaultBallLocation.transform.position;
             bowlingBall.transform.rotation = defaultBallLocation.transform.rotation;
+            //this makes the pin stop moving so it doesn't fall again
             bowlingBall.GetComponent<Rigidbody>().velocity = Vector3.zero;
             bowlingBall.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
